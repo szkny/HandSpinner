@@ -7,13 +7,12 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
-#include<time.h>
 #include<string.h>
 
 #include<GL/glut.h>
 #include<Object.h>
 
-bool MFLAG = false;
+bool MFLAG = false; /* Mouse Flag */
 
 /* Function Prototype Declaration */
 void Window(void);
@@ -33,12 +32,9 @@ void keyboard_sp(int key, int x, int y);
 /* main function */
 int main(int argc, char *argv[]){
 	glutInit(&argc, argv);
-
-	/* animation window */
 	Window();
 	PopUpMenu();
 	Controler();
-
 	glutMainLoop();
 	return 0;
 }
@@ -48,7 +44,7 @@ int main(int argc, char *argv[]){
 
 void Window(void){
 	glutInitWindowPosition(900,0);
-	glutInitWindowSize(600,450);
+	glutInitWindowSize(700,500);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Fidget Spinner");
 	glutDisplayFunc(display);
@@ -59,6 +55,7 @@ void Window(void){
 
 void PopUpMenu(void){
 	glutCreateMenu(menu);
+	glutAddMenuEntry("Camera Reset",1);
 	glutAddMenuEntry("Quit",0);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -73,12 +70,10 @@ void Controler(void){
 
 
 void init(void){
-	glClearColor( 0.8, 0.8, 0.8, 1.0 );
-
+	glClearColor( 0.2, 0.2, 0.2, 1.0 );
 	glEnable(GL_DEPTH_TEST);
 	//glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
-
 	glLightInit();
 }
 
@@ -93,7 +88,15 @@ void display(void){
 	glLightSetting();
 	glHandSpinner();
 	glDisplayStrings();
+	
 	glutSwapBuffers();
+	
+	/* dynamic friction */
+	if(speed){
+		if(0.1<speed)       speed -= 0.01;
+		else if(speed<-0.1) speed += 0.01;
+		else speed = 0.0;
+	}
 }
 
 
@@ -134,7 +137,7 @@ void mouse(int button, int state, int x, int y){
 
 /* mouse motion */
 void motion(int x, int y){
-	const double Rspeed = 0.2; /* Rotate Speed */
+	const double Rspeed = 0.2; /* Camera Rotate Speed */
 	static int xmouse;
 	static int ymouse;
 	if(MFLAG){
@@ -159,9 +162,22 @@ void motion(int x, int y){
 
 
 void menu(int val){
+	double ex,ey,ez;
 	switch(val){
-		case 0:  /* Quit */
+		case 0: /* Quit */
 			exit(0);
+		case 1: /* Camera Reset */
+			dstnc = 100;
+			theta =  0*PI/180;
+			phi   = 50*PI/180;
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			ex = xc+dstnc*cos(phi)*sin(theta);
+			ey = yc+dstnc*sin(phi);
+			ez = zc+dstnc*cos(phi)*cos(theta);
+			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+			glutIdleFunc(idle);
+			break;
 		default:
 			break;
 	}
@@ -169,9 +185,22 @@ void menu(int val){
 
 
 void keyboard(unsigned char key, int x, int y){
+	double ex,ey,ez;
 	switch(key){
 		case 'q': /* Quit */
 			exit(0);
+		case '_': /* Camera Reset */
+			dstnc = 100;
+			theta =  0*PI/180;
+			phi   = 50*PI/180;
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			ex = xc+dstnc*cos(phi)*sin(theta);
+			ey = yc+dstnc*sin(phi);
+			ez = zc+dstnc*cos(phi)*cos(theta);
+			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+			glutIdleFunc(idle);
+			break;
 		default:
 			break;
 	}
@@ -181,14 +210,18 @@ void keyboard(unsigned char key, int x, int y){
 void keyboard_sp(int key, int x, int y){
 	double ex,ey,ez;
 	double dDstnc = dstnc/50;
-	double dspeed = 1.0;
+	double dspeed = 0.2;
 	switch(key){
 		case GLUT_KEY_RIGHT:
-			if(speed< 60) speed += dspeed;
+			tstart = clock();
+			speed += dspeed;
+			if( 60<speed) speed =  60.0;
+			glutIdleFunc(idle);
 			break;
 		case GLUT_KEY_LEFT:
-			if(-60<speed) speed -= dspeed;
-			break;
+			speed -= dspeed;
+			if(speed<-60) speed = -60.0;
+			glutIdleFunc(idle);
 			break;
 		case GLUT_KEY_UP:
 			dstnc -= dDstnc;

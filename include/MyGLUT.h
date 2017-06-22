@@ -37,6 +37,17 @@ void glDrawString2(const char *str, double x0, double y0){
 }
 
 
+/* Drawing Big String Function (string,position x,position y) */
+void glDrawString3(const char *str, double x0, double y0){
+	int size = strlen(str);
+	glRasterPos2d(x0, y0);
+	for(int i = 0; i < size; ++i){
+		char ic = str[i];
+		glutBitmapCharacter(GLUT_BITMAP_HELVETICA_18, ic);
+	}	
+}
+
+
 /* Draw Rectangular Function (length1,length2,length3,position-xyz) */
 void glRectangular(double lx, double ly, double lz, double x, double y, double z){
 	if(lx<=0||ly<=0||lz<=0){
