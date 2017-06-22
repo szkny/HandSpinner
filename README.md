@@ -16,4 +16,4 @@ $ ./bin/HandSpinner
 ```
 
 
-![image1](https://github.com/szkny/HandSpinner/wiki/images/fidget1.gif)
+![image1](https://github.com/szkny/HandSpinner/wiki/images/fidget2.gif)
