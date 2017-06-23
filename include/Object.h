@@ -18,8 +18,12 @@
 bool SFLAG = true;
 
 /* clock time */
-clock_t tstart = clock();
-clock_t tnow   = tstart;
+clock_t tstart = 0; // for rotation timer
+clock_t tnow   = 0; // for rotation timer
+clock_t FrameTbase = 0;   // for frame rate
+int FrameCounter   = 0;   // for frame rate
+int TmpCounter     = 0;   // for frame rate
+double FrameTimer  = 0.0; // for frame rate
 
 /* current window size */
 int windowW = 0;
@@ -122,19 +126,28 @@ void glDisplayStrings(void){
 		glMatrixMode(GL_MODELVIEW);
 		glPushMatrix();
 		glLoadIdentity();
-
-		/* String */
+		
+		FrameTimer = (double)(clock()-FrameTbase)/CLOCKS_PER_SEC;
+		if(FrameTimer>=1.0){
+			TmpCounter = FrameCounter;
+			FrameCounter = 0;
+			FrameTbase = clock();
+		}
+		++FrameCounter;
+		/* Strings */
 		glColor3d(1.0,1.0,1.0);
-		char s[50];
-		sprintf(s,"speed    : %+6.1f",speed);
-		glDrawString3(s,25,30);
+		static char s[128];
+		sprintf(s,"speed : %5.1f rpm",speed*TmpCounter/360.0);
+		glDrawString(s,25,15);
 		if(speed) tnow = clock();
-		sprintf(s,"time     : %5.2f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
+		sprintf(s,"time  : %5.1f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
+		glDrawString(s,25,30);
+		sprintf(s,"frame : %5d fps",TmpCounter);
+		glDrawString(s,25,45);
+		sprintf(s,"range : %5.0f mm",dstnc);
 		glDrawString(s,25,60);
-		sprintf(s,"distance : %+6.1f",dstnc);
+		sprintf(s,"angle : %+4.0f %+3.0f",theta*180/PI,phi*180/PI);
 		glDrawString(s,25,75);
-		sprintf(s,"angle    : %+6.1f %+6.1f",theta*180/PI,phi*180/PI);
-		glDrawString(s,25,90);
 
 		glPopMatrix();
 		glMatrixMode(GL_PROJECTION);
