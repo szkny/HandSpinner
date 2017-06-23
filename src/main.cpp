@@ -14,6 +14,7 @@
 #include<Object.h>
 
 bool MFLAG = false; /* Mouse Flag */
+bool CFLAG = false; /* Color Bar Mode */
 
 /* Function Prototype Declaration */
 void Window(void);
@@ -48,7 +49,7 @@ void Window(void){
 	glutInitWindowPosition(0,0);
 	glutInitWindowSize(250,150);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
-	glutCreateWindow("Fidget Spinner");
+	glutCreateWindow("Hand Spinner");
 	glutDisplayFunc(display);
 	glutReshapeFunc(resize);
 	init();
@@ -57,8 +58,9 @@ void Window(void){
 
 void PopUpMenu(void){
 	glutCreateMenu(menu);
-	glutAddMenuEntry("Status",2);
-	glutAddMenuEntry("Angle Reset",1);
+	glutAddMenuEntry("Change Color",3);
+	glutAddMenuEntry("Show Status",2);
+	glutAddMenuEntry("Reset Angle",1);
 	glutAddMenuEntry("Quit",0);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }
@@ -75,7 +77,6 @@ void Controler(void){
 void init(void){
 	glClearColor( 0.1, 0.1, 0.1, 1.0 );
 	glEnable(GL_DEPTH_TEST);
-	//glEnable(GL_CULL_FACE);
 	glCullFace(GL_FRONT);
 	glLightInit();
 	AngleReset();
@@ -90,6 +91,9 @@ void idle(void){
 void display(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	glLightSetting();
+
+	/* draw objects */
+	if(CFLAG) glColorBar();
 	glHandSpinner();
 	glDisplayStrings();
 	glDisplayButtons();
@@ -101,7 +105,6 @@ void display(void){
 		else if(speed<-0.1) speed += dspeed;
 		else speed = 0.0;
 	}
-	
 	glutSwapBuffers();
 }
 
@@ -113,7 +116,6 @@ void resize(int w, int h){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(60.0, w/(double)h, 1.0, 1000.0);
-
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	double ex = xc+dstnc*cos(phi)*sin(theta);
@@ -130,6 +132,7 @@ void mouse(int button, int state, int x, int y){
 		case GLUT_LEFT_BUTTON:
 			if(state==GLUT_UP){
 				MFLAG = false;
+				if(CFLAG) CFLAG = false;
 			}
 			if(state==GLUT_DOWN){
 				static double ButtonSize = 20;
@@ -152,32 +155,35 @@ void mouse(int button, int state, int x, int y){
 					else speed = 0.0;
 				}
 			}
-			glutIdleFunc(idle);
 			break;
 		default:
 			break;
 	}
+	glutIdleFunc(idle);
 }
 
 
 /* mouse motion */
 void motion(int x, int y){
-	const double Rspeed = 0.2; /* Camera Rotate Speed */
+	const double Rspeed = 0.2; /* Angle Rotate Speed */
 	static int xmouse;
 	static int ymouse;
 	if(MFLAG){
-		glMatrixMode(GL_MODELVIEW);
-		glLoadIdentity();
-		theta += (xmouse-x)*PI/180*Rspeed;
-		if(theta>2*PI) theta -= 2*PI;
-		if(theta<0)    theta += 2*PI;
-		phi +=-(ymouse-y)*PI/180*Rspeed;
-		if(phi> PI*2/5) phi = PI*2/5;
-		if(phi<-PI*2/5) phi =-PI*2/5;
-		double ex = xc+dstnc*cos(phi)*sin(theta);
-		double ey = yc+dstnc*sin(phi);
-		double ez = zc+dstnc*cos(phi)*cos(theta);
-		gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+		if(CFLAG) SetSpinnerColor(x);
+		else{ /* Angle Rotate */
+			glMatrixMode(GL_MODELVIEW);
+			glLoadIdentity();
+			theta += (xmouse-x)*PI/180*Rspeed;
+			if(theta>2*PI) theta -= 2*PI;
+			if(theta<0)    theta += 2*PI;
+			phi +=-(ymouse-y)*PI/180*Rspeed;
+			if(phi> PI*2/5) phi = PI*2/5;
+			if(phi<-PI*2/5) phi =-PI*2/5;
+			double ex = xc+dstnc*cos(phi)*sin(theta);
+			double ey = yc+dstnc*sin(phi);
+			double ez = zc+dstnc*cos(phi)*cos(theta);
+			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+		}
 	}
 	glutIdleFunc(idle);
 	xmouse = x;
@@ -196,11 +202,15 @@ void menu(int val){
 		case 2: /* Status Information */
 			if(SFLAG) SFLAG = false;
 			else SFLAG = true;
-			glutIdleFunc(idle);
+			break;
+		case 3: /* Color Bar */
+			if(CFLAG) CFLAG = false;
+			else CFLAG = true;
 			break;
 		default:
 			break;
 	}
+	glutIdleFunc(idle);
 }
 
 
@@ -214,11 +224,15 @@ void keyboard(unsigned char key, int x, int y){
 		case 's': /* Status Information */
 			if(SFLAG) SFLAG = false;
 			else SFLAG = true;
-			glutIdleFunc(idle);
+			break;
+		case 'c': /* Color Bar */
+			if(CFLAG) CFLAG = false;
+			else CFLAG = true;
 			break;
 		default:
 			break;
 	}
+	glutIdleFunc(idle);
 }
 
 
@@ -226,18 +240,17 @@ void keyboard_sp(int key, int x, int y){
 	double ex,ey,ez;
 	double dDstnc = dstnc/50;
 	double dspeed = 0.2;
+	static double max = 60.0;
 	switch(key){
 		case GLUT_KEY_RIGHT:
 			tstart = clock();
 			speed += dspeed;
-			if( 60<speed) speed =  60.0;
-			glutIdleFunc(idle);
+			if( max<speed) speed = max;
 			break;
 		case GLUT_KEY_LEFT:
 			tstart = clock();
 			speed -= dspeed;
-			if(speed<-60) speed = -60.0;
-			glutIdleFunc(idle);
+			if(speed<-max) speed = -max;
 			break;
 		case GLUT_KEY_UP:
 			dstnc -= dDstnc;
@@ -248,7 +261,6 @@ void keyboard_sp(int key, int x, int y){
 			ey = yc+dstnc*sin(phi);
 			ez = zc+dstnc*cos(phi)*cos(theta);
 			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
-			glutIdleFunc(idle);
 			break;
 		case GLUT_KEY_DOWN:
 			dstnc += dDstnc;
@@ -259,11 +271,11 @@ void keyboard_sp(int key, int x, int y){
 			ey = yc+dstnc*sin(phi);
 			ez = zc+dstnc*cos(phi)*cos(theta);
 			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
-			glutIdleFunc(idle);
 			break;
 		default:
 			break;
 	}
+	glutIdleFunc(idle);
 }
 
 
@@ -277,5 +289,4 @@ void AngleReset(void){
 	double ey = yc+dstnc*sin(phi);
 	double ez = zc+dstnc*cos(phi)*cos(theta);
 	gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
-	glutIdleFunc(idle);
 }

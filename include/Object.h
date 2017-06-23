@@ -11,6 +11,7 @@
 
 #include"MyGLUT.h"
 #include"Colors.h"
+#include"Hue2rgb.h"
 #include"Define.h"
 
 /* status flag */
@@ -19,6 +20,10 @@ bool SFLAG = true;
 /* clock time */
 clock_t tstart = clock();
 clock_t tnow   = tstart;
+
+/* current window size */
+int windowW = 0;
+int windowH = 0;
 
 /* parameters for camera */
 double dstnc,theta,phi;
@@ -35,7 +40,6 @@ void glRotor(void);
 void glHandSpinner(void){
 	static double r = 0.0;
 	glShaft();
-	
 	glPushMatrix();
 	glRotated(r,0,1,0);
 	glRotor();
@@ -53,7 +57,7 @@ void glShaft(void){
 		glTorus( 10.0,1.60,pow(-1,j)*4.25,0,0);
 		glPipe(8.4,1.0,3.2,pow(-1,j)*4.25,0,0);
 		glCylinder(7.4,2.8,pow(-1,j)*4.00,0,0);
-		glCylinder(10,1.60,pow(-1,j)*3.45,0,0);	
+		glCylinder(10-1e-2,1.6,pow(-1,j)*3.45,0,0);	
 		/* pattern */
 		for(int i=0;i<3;++i){
 			glPushMatrix();
@@ -107,10 +111,6 @@ void glRotor(void){
 }
 
 
-int windowW = 0;
-int windowH = 0;
-
-
 /* Draw String Information */
 void glDisplayStrings(void){
 	if(SFLAG){
@@ -157,7 +157,7 @@ void glDisplayButtons(void){
 
 	/* Speed Setting Button */
 	static double ButtonSize    = 20.0;
-	static double DirectionSize =  9.0;
+	static double DirectionSize = 10.0;
 	double up = windowH*(DirectionSize/2.0+0.5)/DirectionSize;
 	double dw = windowH*(DirectionSize/2.0-0.5)/DirectionSize;
 	double R = windowW-ButtonSize;
@@ -190,6 +190,51 @@ void glDisplayButtons(void){
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_LIGHTING);
 }
+
+
+void glColorBar(void){
+	glDisable(GL_LIGHTING);
+	glMatrixMode(GL_PROJECTION);
+	glPushMatrix();
+	glLoadIdentity();
+	gluOrtho2D(0, windowW, windowH, 0);
+	glMatrixMode(GL_MODELVIEW);
+	glPushMatrix();
+	glLoadIdentity();
+
+	double hmax = windowW;
+	double hbin = hmax/1000;
+	int i = 0;
+	glBegin(GL_QUADS);
+	for(double h=0.0;h<hmax;h+=hbin){
+		hue2rgb hue(h,hmax);
+		glColor3d(hue.R(),hue.G(),hue.B());
+		glVertex2d(h     ,windowH-20);
+		glVertex2d(h+hbin,windowH-20);
+		glVertex2d(h+hbin,windowH);
+		glVertex2d(h     ,windowH);
+		++i;
+	}
+	glEnd();
+
+	glPopMatrix();
+	glMatrixMode(GL_PROJECTION);
+	glPopMatrix();
+	glMatrixMode(GL_MODELVIEW);
+	glEnable(GL_LIGHTING);
+}
+
+
+void SetSpinnerColor(int x){
+	hue2rgb hue(x,windowW);
+	ms_HandSpinner.diffuse[0] = 0.10+0.20*hue.R();
+	ms_HandSpinner.ambient[0] = 0.05+0.05*hue.R();
+	ms_HandSpinner.diffuse[1] = 0.10+0.20*hue.G();
+	ms_HandSpinner.ambient[1] = 0.05+0.05*hue.G();
+	ms_HandSpinner.diffuse[2] = 0.10+0.20*hue.B();
+	ms_HandSpinner.ambient[2] = 0.05+0.05*hue.B();
+}
+
 
 /*****************************/
 
