@@ -29,6 +29,7 @@ void motion(int x, int y);
 void menu(int val);
 void keyboard(unsigned char key, int x, int y);
 void keyboard_sp(int key, int x, int y);
+void DrawScene(void);
 void AngleReset(void);
 
 
@@ -105,6 +106,7 @@ void display(void){
 		else if(speed<-0.1) speed += dspeed;
 		else speed = 0.0;
 	}
+
 	glutSwapBuffers();
 }
 
@@ -116,12 +118,7 @@ void resize(int w, int h){
 	glMatrixMode(GL_PROJECTION);
 	glLoadIdentity();
 	gluPerspective(60.0, w/(double)h, 1.0, 1000.0);
-	glMatrixMode(GL_MODELVIEW);
-	glLoadIdentity();
-	double ex = xc+dstnc*cos(phi)*sin(theta);
-	double ey = yc+dstnc*sin(phi);
-	double ez = zc+dstnc*cos(phi)*cos(theta);
-	gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+	DrawScene();
 }
 
 
@@ -171,18 +168,13 @@ void motion(int x, int y){
 	if(MFLAG){
 		if(CFLAG) SetSpinnerColor(x);
 		else{ /* Angle Rotate */
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
 			theta += (xmouse-x)*PI/180*Rspeed;
 			if(theta>2*PI) theta -= 2*PI;
 			if(theta<0)    theta += 2*PI;
 			phi +=-(ymouse-y)*PI/180*Rspeed;
 			if(phi> PI*2/5) phi = PI*2/5;
 			if(phi<-PI*2/5) phi =-PI*2/5;
-			double ex = xc+dstnc*cos(phi)*sin(theta);
-			double ey = yc+dstnc*sin(phi);
-			double ez = zc+dstnc*cos(phi)*cos(theta);
-			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+			DrawScene();
 		}
 	}
 	glutIdleFunc(idle);
@@ -195,6 +187,7 @@ void motion(int x, int y){
 void menu(int val){
 	switch(val){
 		case 0: /* Quit */
+			printf("\n");
 			exit(0);
 		case 1: /* Camera Reset */
 			AngleReset();
@@ -217,6 +210,7 @@ void menu(int val){
 void keyboard(unsigned char key, int x, int y){
 	switch(key){
 		case 'q': /* Quit */
+			printf("\n");
 			exit(0);
 		case '_': /* Camera Reset */
 			AngleReset();
@@ -237,7 +231,6 @@ void keyboard(unsigned char key, int x, int y){
 
 
 void keyboard_sp(int key, int x, int y){
-	double ex,ey,ez;
 	double dDstnc = dstnc/50;
 	double dspeed = 0.2;
 	static double max = 60.0;
@@ -255,22 +248,12 @@ void keyboard_sp(int key, int x, int y){
 		case GLUT_KEY_UP:
 			dstnc -= dDstnc;
 			if(dstnc<10) dstnc = 10;
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			ex = xc+dstnc*cos(phi)*sin(theta);
-			ey = yc+dstnc*sin(phi);
-			ez = zc+dstnc*cos(phi)*cos(theta);
-			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+			DrawScene();
 			break;
 		case GLUT_KEY_DOWN:
 			dstnc += dDstnc;
 			if(dstnc>700) dstnc = 700;
-			glMatrixMode(GL_MODELVIEW);
-			glLoadIdentity();
-			ex = xc+dstnc*cos(phi)*sin(theta);
-			ey = yc+dstnc*sin(phi);
-			ez = zc+dstnc*cos(phi)*cos(theta);
-			gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+			DrawScene();
 			break;
 		default:
 			break;
@@ -279,14 +262,19 @@ void keyboard_sp(int key, int x, int y){
 }
 
 
-void AngleReset(void){
-	dstnc = 80.0;
-	theta =  0.0;
-	phi   = PI/4;
+void DrawScene(void){
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 	double ex = xc+dstnc*cos(phi)*sin(theta);
 	double ey = yc+dstnc*sin(phi);
 	double ez = zc+dstnc*cos(phi)*cos(theta);
 	gluLookAt(ex,ey,ez,xc,yc,zc,0,1,0);
+}
+
+
+void AngleReset(void){
+	dstnc = 80.0;
+	theta =  0.0;
+	phi   = PI/4;
+	DrawScene();
 }

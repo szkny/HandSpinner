@@ -1,6 +1,7 @@
 # GNUmakefile
 #		(c) S.Suzuki 2017.1.16 ————— patch 2017.6.1
 
+
 NAME     = HandSpinner
 
 SUFFIX   = .cpp
