@@ -45,8 +45,8 @@ int main(int argc, char *argv[]){
 /******** Functions *********/
 
 void Window(void){
-	glutInitWindowPosition(1000,0);
-	glutInitWindowSize(350,150);
+	glutInitWindowPosition(0,0);
+	glutInitWindowSize(250,150);
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Fidget Spinner");
 	glutDisplayFunc(display);
@@ -133,8 +133,8 @@ void mouse(int button, int state, int x, int y){
 			}
 			if(state==GLUT_DOWN){
 				static double ButtonSize = 20;
-				static double XbuttonR = windowW-ButtonSize;
-				static double XbuttonL = ButtonSize;
+				double XbuttonR = windowW-ButtonSize;
+				double XbuttonL = ButtonSize;
 				if(XbuttonR<=x){
 					if(0<=speed){
 						tstart = clock();

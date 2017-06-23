@@ -129,7 +129,7 @@ void glDisplayStrings(void){
 		if(speed) tnow = clock();
 		sprintf(s,"time     : %5.2f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
 		glDrawString(s,25,60);
-		sprintf(s,"distance : %+6.1f (arrow key Up,Down)",dstnc);
+		sprintf(s,"distance : %+6.1f",dstnc);
 		glDrawString(s,25,75);
 		sprintf(s,"angle    : %+6.1f %+6.1f",theta*180/PI,phi*180/PI);
 		glDrawString(s,25,90);
@@ -154,8 +154,8 @@ void glDisplayButtons(void){
 	glLoadIdentity();
 
 	/* Speed Setting Button */
-	static double ButtonSize     = 20.0;
-	static double DirectionSize  =  9.0;
+	static double ButtonSize    = 20.0;
+	static double DirectionSize =  9.0;
 	double up = windowH*(DirectionSize/2.0+0.5)/DirectionSize;
 	double dw = windowH*(DirectionSize/2.0-0.5)/DirectionSize;
 	double R = windowW-ButtonSize;
