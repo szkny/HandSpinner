@@ -1,7 +1,7 @@
 # HandSpinner
 Simulation of Hand Spinner (Fidget Spinner) using GLUT and OpenGL
 
-Execute the following command for using GLUT.
+1. Execute the following command for using GLUT.
 ``` sh
 $ sudo mkdir /usr/local/include
 $ sudo mkdir /usr/local/include/GL
@@ -17,3 +17,5 @@ $ ./bin/HandSpinner
 
 
 ![image1](https://github.com/szkny/HandSpinner/wiki/images/fidget.gif)
+
+![image1](https://github.com/szkny/HandSpinner/wiki/images/fidget.png)
