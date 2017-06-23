@@ -13,17 +13,16 @@
 #include"Colors.h"
 #include"Define.h"
 
+/* status flag */
+bool SFLAG = true;
+
 /* clock time */
 clock_t tstart = clock();
-clock_t tstop  = tstart;
+clock_t tnow   = tstart;
 
 /* parameters for camera */
-double dstnc = 100.0;
-double theta =  0*PI/180;
-double phi   = 50*PI/180;
-double xc    = 0.0;
-double yc    = 0.0;
-double zc    = 0.0;
+double dstnc,theta,phi;
+double xc,yc,zc;
 
 /* rotation speed */
 double speed = 0.0;
@@ -112,6 +111,39 @@ int windowH = 0;
 
 /* Draw String Information */
 void glDisplayStrings(void){
+	if(SFLAG){
+		glDisable(GL_LIGHTING);
+		glMatrixMode(GL_PROJECTION);
+		glPushMatrix();
+		glLoadIdentity();
+		gluOrtho2D(0, windowW, windowH, 0);
+		glMatrixMode(GL_MODELVIEW);
+		glPushMatrix();
+		glLoadIdentity();
+
+		/* String */
+		glColor3d(1.0,1.0,1.0);
+		char s[50];
+		sprintf(s,"speed    : %+6.1f",speed);
+		glDrawString3(s,25,30);
+		if(speed) tnow = clock();
+		sprintf(s,"time     : %5.2f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
+		glDrawString(s,25,60);
+		sprintf(s,"distance : %+6.1f (arrow key Up,Down)",dstnc);
+		glDrawString(s,25,75);
+		sprintf(s,"angle    : %+6.1f %+6.1f",theta*180/PI,phi*180/PI);
+		glDrawString(s,25,90);
+
+		glPopMatrix();
+		glMatrixMode(GL_PROJECTION);
+		glPopMatrix();
+		glMatrixMode(GL_MODELVIEW);
+		glEnable(GL_LIGHTING);
+	}	
+}
+
+/* Draw Buttons */
+void glDisplayButtons(void){
 	glDisable(GL_LIGHTING);
 	glMatrixMode(GL_PROJECTION);
 	glPushMatrix();
@@ -121,25 +153,40 @@ void glDisplayStrings(void){
 	glPushMatrix();
 	glLoadIdentity();
 
-	/* String */
+	/* Speed Setting Button */
+	static double ButtonSize     = 20.0;
+	static double DirectionSize  =  9.0;
+	double up = windowH*(DirectionSize/2.0+0.5)/DirectionSize;
+	double dw = windowH*(DirectionSize/2.0-0.5)/DirectionSize;
+	double R = windowW-ButtonSize;
+	double L = ButtonSize;
+	glColor3d(0.5,0.5,0.5);
+	glBegin(GL_TRIANGLES);
+	glVertex2d(R+1,dw);
+	glVertex2d(R+1,up);
+	glVertex2d(windowW-1,windowH/2.0);
+	glVertex2d(1,windowH/2.0);
+	glVertex2d(L-1,up);
+	glVertex2d(L-1,dw);
+	glEnd();
+
 	glColor3d(1.0,1.0,1.0);
-	char s[50];
-	sprintf(s,"speed    : %+6.1f  (arrow key Right,Left)",speed);
-	glDrawString3(s,20,30);
-	if(speed) tstop = clock();
-	sprintf(s,"time     : %5.2f sec",(double)(tstop-tstart)/CLOCKS_PER_SEC);
-	glDrawString(s,20,60);
-	sprintf(s,"distance : %+6.1f (arrow key Up,Down)",dstnc);
-	glDrawString(s,20,75);
-	sprintf(s,"angle    : %+6.1f %+6.1f",theta*180/PI,phi*180/PI);
-	glDrawString(s,20,90);
+	glBegin(GL_QUADS);
+	glVertex2d(R,0);
+	glVertex2d(windowW,0);
+	glVertex2d(windowW,windowH);
+	glVertex2d(R,windowH);
+	glVertex2d(0,0);
+	glVertex2d(L,0);
+	glVertex2d(L,windowH);
+	glVertex2d(0,windowH);
+	glEnd();
 
 	glPopMatrix();
 	glMatrixMode(GL_PROJECTION);
 	glPopMatrix();
 	glMatrixMode(GL_MODELVIEW);
 	glEnable(GL_LIGHTING);
-	
 }
 
 /*****************************/
