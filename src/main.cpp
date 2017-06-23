@@ -58,7 +58,7 @@ void Window(void){
 void PopUpMenu(void){
 	glutCreateMenu(menu);
 	glutAddMenuEntry("Status",2);
-	glutAddMenuEntry("Camera Reset",1);
+	glutAddMenuEntry("Angle Reset",1);
 	glutAddMenuEntry("Quit",0);
 	glutAttachMenu(GLUT_RIGHT_BUTTON);
 }

@@ -27,7 +27,7 @@ double xc,yc,zc;
 /* rotation speed */
 double speed = 0.0;
 
-
+/* prototype decleration */
 void glShaft(void);
 void glRotor(void);
 
@@ -35,7 +35,7 @@ void glRotor(void);
 void glHandSpinner(void){
 	static double r = 0.0;
 	glShaft();
-
+	
 	glPushMatrix();
 	glRotated(r,0,1,0);
 	glRotor();
@@ -49,10 +49,12 @@ void glShaft(void){
 	glPushMatrix();
 	glRotated(90,0,0,1);
 	for(int j=0;j<2;++j){
+		/* grip */
 		glTorus( 10.0,1.60,pow(-1,j)*4.25,0,0);
 		glPipe(8.4,1.0,3.2,pow(-1,j)*4.25,0,0);
 		glCylinder(7.4,2.8,pow(-1,j)*4.00,0,0);
-		glCylinder(10,1.60,pow(-1,j)*3.45,0,0);
+		glCylinder(10,1.60,pow(-1,j)*3.45,0,0);	
+		/* pattern */
 		for(int i=0;i<3;++i){
 			glPushMatrix();
 			glRotated(i*120,0,0,0);
@@ -68,33 +70,32 @@ void glRotor(void){
 	glMaterialColor(ms_HandSpinner);
 	glPushMatrix();
 	glRotated(90,0,0,1);
-
+	/* foundation */
 	glPipe(11,6,5,0,0,0);
-
 	static double R = 22.0;
 	for(int i=0;i<3;++i){
 		glMaterialColor(ms_HandSpinner);
 		double theta = (double)i*2.0/3.0*PI;
+		/* wheel */
 		glPipe(11.5,0.5,5,0,R*cos(theta),R*sin(theta));
 		glTorus(14,2.5,0,R*cos(theta),R*sin(theta));
-
+		/* plane */
 		glPushMatrix();
 		glRotated(-90,0,0,1);
 		glRotated(theta*180/PI+60,0,1,0);
-		glRectangular(R/2,5,18,R/2,0,0);
+		glRectangular(R/2,5,16,R/2,0,0);
 		glPopMatrix();
-		
-		int max = 30;
+		/* curve */
+		int max = 50;
 		for(double j=0;j<=max;++j){
 			glPushMatrix();
 			glRotated(-90,0,0,1);
 			glRotated(theta*180/PI-30,0,1,0);
-			glTranslated(0,0,15);
-			glRotated(-40+80.0*j/max,0,1,0);
-			glCylinder(2.5,25,0,0,-3.9);
+			glTranslated(3.5*(+max-2*j)/max,0,15);
+			glRotated(  58.0*(-max+2*j)/max,0,1,0);
+			glCylinder(2.5,10-2.0*pow((max-2*j)/max,2),0,0,-3.9);
 			glPopMatrix();
 		}
-		
 		/* wight */
 		glMaterialColor(ms_black_plastic);
 		glPipe(11,6,5.2,0,R*cos(theta),R*sin(theta));
@@ -108,6 +109,7 @@ void glRotor(void){
 
 int windowW = 0;
 int windowH = 0;
+
 
 /* Draw String Information */
 void glDisplayStrings(void){
