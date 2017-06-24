@@ -7,7 +7,7 @@
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
-#include<GL/glut.h>
+#include<glut.h>
 
 #include"MyGLUT.h"
 #include"Colors.h"
@@ -57,18 +57,10 @@ void glShaft(void){
 	glPushMatrix();
 	glRotated(90,0,0,1);
 	for(int j=0;j<2;++j){
-		/* grip */
+		/* handle grip */
 		glTorus( 10.0,1.60,pow(-1,j)*4.25,0,0);
-		glPipe(8.4,1.0,3.2,pow(-1,j)*4.25,0,0);
-		glCylinder(7.4,2.8,pow(-1,j)*4.00,0,0);
+		glCylinder(8.4,3.2,pow(-1,j)*4.25,0,0);
 		glCylinder(10-1e-2,1.6,pow(-1,j)*3.45,0,0);	
-		/* pattern */
-		for(int i=0;i<3;++i){
-			glPushMatrix();
-			glRotated(i*120,0,0,0);
-			glRectangular(0.4,3.0,0.5,pow(-1,j)*5.6,6,0);
-			glPopMatrix();
-		}
 	}
 	glPopMatrix();
 }
@@ -80,33 +72,33 @@ void glRotor(void){
 	glRotated(90,0,0,1);
 	/* foundation */
 	glPipe(11,6,5,0,0,0);
-	static double R = 22.0;
+	static double R = 23.0;
 	for(int i=0;i<3;++i){
 		glMaterialColor(ms_HandSpinner);
 		double theta = (double)i*2.0/3.0*PI;
 		/* wheel */
 		glPipe(11.5,0.5,5,0,R*cos(theta),R*sin(theta));
-		glTorus(14,2.5,0,R*cos(theta),R*sin(theta));
+		glTorus( 14.0,2.5,0,R*cos(theta),R*sin(theta));
 		/* plane */
 		glPushMatrix();
 		glRotated(-90,0,0,1);
 		glRotated(theta*180/PI+60,0,1,0);
-		glRectangular(R/2,5,16,R/2,0,0);
+		glRectangular(R/2,5,15,R/2,0,0);
 		glPopMatrix();
 		/* curve */
-		int max = 50;
-		for(double j=0;j<=max;++j){
+		int smooth = 50;
+		for(double j=0;j<=smooth;++j){
 			glPushMatrix();
 			glRotated(-90,0,0,1);
 			glRotated(theta*180/PI-30,0,1,0);
-			glTranslated(3.5*(+max-2*j)/max,0,15);
-			glRotated(  58.0*(-max+2*j)/max,0,1,0);
-			glCylinder(2.5,10-2.0*pow((max-2*j)/max,2),0,0,-3.9);
+			glTranslated(6.0*(+smooth-2*j)/smooth,0,15);
+			glRotated(  84.5*(-smooth+2*j)/smooth,0,1,0);
+			glCylinder(2.5,10-4.0*pow((smooth-2*j)/smooth,2),0,0,-3.9);
 			glPopMatrix();
 		}
 		/* wight */
 		glMaterialColor(ms_black_plastic);
-		glPipe(11,6,5.2,0,R*cos(theta),R*sin(theta));
+		glPipe(10,4,5.1,0,R*cos(theta),R*sin(theta));
 		glMaterialColor(ms_black_rubber);
 		glPipe(11,1,5.5,0,R*cos(theta),R*sin(theta));
 		glPipe( 6,1,5.5,0,R*cos(theta),R*sin(theta));
@@ -137,7 +129,7 @@ void glDisplayStrings(void){
 		/* Strings */
 		glColor3d(1.0,1.0,1.0);
 		static char s[128];
-		sprintf(s,"speed : %5.1f rpm",speed*TmpCounter/360.0);
+		sprintf(s,"speed : %5.1f rpm",fabs(speed)*TmpCounter/6.0);
 		glDrawString(s,25,15);
 		if(speed) tnow = clock();
 		sprintf(s,"time  : %5.1f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
@@ -239,13 +231,17 @@ void glColorBar(void){
 
 
 void SetSpinnerColor(int x){
+	static double doff = 0.10;
+	static double aoff = 0.05;
+	static double diff = 0.15;
+	static double ambi = 0.10;
 	hue2rgb hue(x,windowW);
-	ms_HandSpinner.diffuse[0] = 0.10+0.20*hue.R();
-	ms_HandSpinner.ambient[0] = 0.05+0.05*hue.R();
-	ms_HandSpinner.diffuse[1] = 0.10+0.20*hue.G();
-	ms_HandSpinner.ambient[1] = 0.05+0.05*hue.G();
-	ms_HandSpinner.diffuse[2] = 0.10+0.20*hue.B();
-	ms_HandSpinner.ambient[2] = 0.05+0.05*hue.B();
+	ms_HandSpinner.diffuse[0] = doff+diff*hue.R();
+	ms_HandSpinner.ambient[0] = aoff+ambi*hue.R();
+	ms_HandSpinner.diffuse[1] = doff+diff*hue.G();
+	ms_HandSpinner.ambient[1] = aoff+ambi*hue.G();
+	ms_HandSpinner.diffuse[2] = doff+diff*hue.B();
+	ms_HandSpinner.ambient[2] = aoff+ambi*hue.B();
 }
 
 
