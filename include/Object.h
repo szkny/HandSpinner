@@ -7,7 +7,7 @@
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
-#include<glut.h>
+#include<GLUT/glut.h>
 
 #include"MyGLUT.h"
 #include"Colors.h"
@@ -129,16 +129,16 @@ void glDisplayStrings(void){
 		/* Strings */
 		glColor3d(1.0,1.0,1.0);
 		static char s[128];
-		sprintf(s,"speed : %5.1f rpm",fabs(speed)*TmpCounter/6.0);
+		sprintf(s,"speed    : %5.1f rpm",fabs(speed)*TmpCounter/6.0);
 		glDrawString(s,25,15);
 		if(speed) tnow = clock();
-		sprintf(s,"time  : %5.1f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
+		sprintf(s,"time     : %5.1f sec",(double)(tnow-tstart)/CLOCKS_PER_SEC);
 		glDrawString(s,25,30);
-		sprintf(s,"frame : %5d fps",TmpCounter);
+		sprintf(s,"frame    : %5d fps",TmpCounter);
 		glDrawString(s,25,45);
-		sprintf(s,"range : %5.0f mm",dstnc);
+		sprintf(s,"distance : %5.0f mm",dstnc);
 		glDrawString(s,25,60);
-		sprintf(s,"angle : %+4.0f %+3.0f",theta*180/PI,phi*180/PI);
+		sprintf(s,"angle    : %+4.0f %+3.0f",theta*180/PI,phi*180/PI);
 		glDrawString(s,25,75);
 
 		glPopMatrix();

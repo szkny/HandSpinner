@@ -1,17 +1,17 @@
 # GNUmakefile
-#		(c) S.Suzuki 2017.1.16 ————— patch 2017.6.24
+#		(c) S.Suzuki 2017.1.16 ————— patch 2017.6.27
 
 NAME     = HandSpinner
 
 SUFFIX   = .cpp
 
 SRC_DIR  = ./src
-INC_DIR  = -I./include -I/System/Library/Frameworks/GLUT.framework/Headers
+INC_DIR  = -I./include
 LIB_DIR  = ./lib
 EXE_DIR  = ./bin
 
 COMPILER = g++
-CFLAGS   = -w -O2
+CFLAGS   = -Wall -O2 -mmacosx-version-min=10.8
 FRAME    = -framework GLUT -framework OpenGL 
 
 SOURCES  = $(wildcard $(SRC_DIR)/*$(SUFFIX))
