@@ -8,7 +8,7 @@
 #endif
 
 #ifdef linux
-#include<gl/glut.h>
+#include<GL/glut.h>
 #endif
 
 struct MaterialStruct {

@@ -12,10 +12,10 @@
 #endif
 
 #ifdef linux
-#include<gl/glut.h>
+#include<GL/glut.h>
 #endif
 
-#include"define.h"
+#include"Define.h"
 
 /* Polygon Mode */
 bool PFLAG  =  true;    
