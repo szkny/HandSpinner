@@ -6,7 +6,14 @@
 #include<stdio.h>
 #include<stdlib.h>
 #include<math.h>
+
+#ifdef __APPLE__
 #include<GLUT/glut.h>
+#endif
+
+#ifdef linux
+#include<gl/glut.h>
+#endif
 
 #include"define.h"
 
