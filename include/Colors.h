@@ -3,7 +3,13 @@
 
 /************ Material Color Structure ************/
 /********** by M.J.Kilgard & M.Yamamoto ***********/
+#ifdef __APPLE__
 #include<GLUT/glut.h>
+#endif
+
+#ifdef linux
+#include<gl/glut.h>
+#endif
 
 struct MaterialStruct {
 	GLfloat ambient[4];

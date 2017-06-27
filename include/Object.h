@@ -7,7 +7,14 @@
 #include<stdlib.h>
 #include<math.h>
 #include<time.h>
+
+#ifdef __APPLE__
 #include<GLUT/glut.h>
+#endif
+
+#ifdef linux
+#include<gl/glut.h>
+#endif
 
 #include"MyGLUT.h"
 #include"Colors.h"
