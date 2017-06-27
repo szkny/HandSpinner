@@ -12,8 +12,8 @@ EXE_DIR  = ./bin
 
 COMPILER = g++
 
+# cross platform make
 UNAME   := $(shell uname)
-
 ifeq ($(UNAME), Darwin)
 CFLAGS  += -Wall -O2 -mmacosx-version-min=10.8
 FRAME    = -framework GLUT -framework OpenGL 

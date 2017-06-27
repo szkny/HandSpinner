@@ -15,7 +15,7 @@
 #endif
 
 #ifdef linux
-#include<gl/glut.h>
+#include<GL/glut.h>
 #endif
 
 #include<Object.h>
