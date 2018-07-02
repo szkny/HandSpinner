@@ -11,7 +11,7 @@
 #include<string.h>
 
 #ifdef __APPLE__
-#include<GLUT/glut.h>
+#include<GL/freeglut.h>
 #endif
 
 #ifdef linux
@@ -30,6 +30,7 @@ void Controler(void);
 void init(void);
 void idle(void);
 void display(void);
+void Timer(int value);
 void resize(int w, int h);
 void mouse(int button, int state, int x, int y);
 void motion(int x, int y);
@@ -59,6 +60,7 @@ void Window(void){
 	glutInitDisplayMode(GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH);
 	glutCreateWindow("Hand Spinner");
 	glutDisplayFunc(display);
+	glutTimerFunc(10,Timer,0);
 	glutReshapeFunc(resize);
 	init();
 }
@@ -100,13 +102,16 @@ void idle(void){
 void display(void){
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);	
 	glLightSetting();
-
 	/* draw objects */
 	if(CFLAG) glColorBar();
 	glHandSpinner();
 	glDisplayStrings();
 	glDisplayButtons();
+	glutSwapBuffers();
+}
 
+
+void Timer(int value){
 	/* dynamic friction */
 	static double dspeed = 0.002;
 	if(speed){
@@ -114,8 +119,8 @@ void display(void){
 		else if(speed<-0.1) speed += dspeed;
 		else speed = 0.0;
 	}
-
-	glutSwapBuffers();
+	glutPostRedisplay();
+	glutTimerFunc(10,Timer,0);
 }
 
 

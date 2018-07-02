@@ -9,7 +9,7 @@
 #include<time.h>
 
 #ifdef __APPLE__
-#include<GLUT/glut.h>
+#include<GL/freeglut.h>
 #endif
 
 #ifdef linux
@@ -216,7 +216,6 @@ void glColorBar(void){
 
 	double hmax = windowW;
 	double hbin = hmax/1000;
-	int i = 0;
 	glBegin(GL_QUADS);
 	for(double h=0.0;h<hmax;h+=hbin){
 		hue2rgb hue(h,hmax);
@@ -225,7 +224,6 @@ void glColorBar(void){
 		glVertex2d(h+hbin,windowH-20);
 		glVertex2d(h+hbin,windowH);
 		glVertex2d(h     ,windowH);
-		++i;
 	}
 	glEnd();
 

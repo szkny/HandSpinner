@@ -15,7 +15,7 @@ COMPILER = g++
 # cross platform make
 UNAME   := $(shell uname)
 ifeq ($(UNAME), Darwin)
-CFLAGS  += -Wall -O2 -mmacosx-version-min=10.8
+CFLAGS  += -Wall -O2
 FRAME    = -framework GLUT -framework OpenGL 
 endif
 ifeq ($(UNAME), Linux)
@@ -27,11 +27,17 @@ OBJECTS  = $(notdir $(SOURCES:%$(SUFFIX)=%.o))
 TARGETS  = $(basename $(OBJECTS))
 LIBRARY  = $(NAME).a
 
-all: $(LIBRARY) $(NAME)
+.PHONY:all build run clean
+all: build
 	@echo "    —————————————————————————————————————————————  "
 	@echo "         Complete to create $(NAME) into $(EXE_DIR)"
 	@echo "            Let's try doing $(EXE_DIR)/$(NAME) !   "
 	@echo "    —————————————————————————————————————————————  "
+
+run: $(NAME)
+	@$(EXE_DIR)/$<
+
+build: $(LIBRARY) $(NAME)
 
 # make archives
 $(LIBRARY): $(OBJECTS)
@@ -52,6 +58,5 @@ endef
 $(foreach var,$(TARGETS),$(eval $(call MACRO,$(var))))
 
 #make clean
-.PHONY: clean
-clean: 
+clean:
 	$(RM) $(OBJECTS) $(LIB_DIR)/$(LIBRARY) $(EXE_DIR)/$(NAME)

@@ -4,7 +4,7 @@
 /************ Material Color Structure ************/
 /********** by M.J.Kilgard & M.Yamamoto ***********/
 #ifdef __APPLE__
-#include<GLUT/glut.h>
+#include<GL/freeglut.h>
 #endif
 
 #ifdef linux
